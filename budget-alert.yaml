@@ -4,21 +4,26 @@ Parameters:
   pBudgetAlertEmail1:
     Type: String
     Description: Budget notifications email address of Project DL
+    Default: aws-shared-services-prod@bankfab.com
   pBudgetAlertEmail2:
     Type: String
     Description: Budget notifications email address of Cloudops 
+    Default: AWS-Cloudops@bankfab.com
   pBudgetAmount:
     Type: Number
     Description: Member account Budget limit amount ($ USD)
     MinValue: 0
+    Default: 1000
   pMemberaccountid:
     Type: Number
     MinValue: 000000000001
     MaxValue: 999999999999
     ConstraintDescription: "Enter Member Account No Only Ex:- 012345678901" 
+    Default: 563319748786
   pMemberaccountname:
     Type: String
-    Description: Enter Member Account Name  
+    Description: Enter Member Account Name 
+    Default: shared-services-prod
 Metadata:
   'AWS::CloudFormation::Interface':
     ParameterGroups:
