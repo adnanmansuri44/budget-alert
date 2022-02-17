@@ -1,1 +1,100 @@
-
+AWSTemplateFormatVersion: 2010-09-09
+Description: Configure the budget alert with notification for over usage.
+Parameters:
+  pBudgetAlertEmail1:
+    Type: String
+    Description: Budget notifications email address of Project DL
+  pBudgetAlertEmail2:
+    Type: String
+    Description: Budget notifications email address of Cloudops 
+  pBudgetAmount:
+    Type: Number
+    Description: Member account Budget limit amount ($ USD)
+    MinValue: 0
+  pMemberaccountid:
+    Type: Number
+    MinValue: 000000000001
+    MaxValue: 999999999999
+    ConstraintDescription: "Enter Member Account No Only Ex:- 012345678901" 
+  pMemberaccountname:
+    Type: String
+    Description: Enter Member Account Name  
+Metadata:
+  'AWS::CloudFormation::Interface':
+    ParameterGroups:
+      - Label:
+          default: Budgets
+        Parameters:
+          - pBudgetAlertEmail1
+          - pBudgetAlertEmail2
+          - pBudgetAmount
+          - pMemberaccountid
+          - pMemberaccountname          
+    ParameterLabels:
+      pBudgetAlertEmail1:
+        default: Budget email 1
+      pBudgetAlertEmail2:
+        default: Budget email 2        
+      pBudgetAmount:
+        default: Budget limit
+      pMemberaccountid:
+        default: Member Account ID
+      pMemberaccountname:
+        default: Member Account Name        
+Resources:
+  rBudgetReports:
+    Type: 'AWS::Budgets::Budget'
+    Properties:
+      Budget:
+        BudgetLimit:
+          Amount: !Ref pBudgetAmount
+          Unit: USD
+        BudgetName: !Sub "Budget-Alert-${pMemberaccountname}"
+        BudgetType: COST
+        CostTypes: 
+            IncludeCredit: false
+            IncludeDiscount: true
+            IncludeOtherSubscription: true
+            IncludeRecurring: true
+            IncludeRefund: true
+            IncludeSubscription: true
+            IncludeSupport: true
+            IncludeTax: true
+            IncludeUpfront: true
+            UseAmortized: false
+            UseBlended: false
+        TimeUnit: MONTHLY
+        CostFilters:
+            LinkedAccount:
+                - !Ref pMemberaccountid
+      NotificationsWithSubscribers:
+        - Notification:
+            ComparisonOperator: GREATER_THAN
+            NotificationType: ACTUAL
+            Threshold: 70
+            ThresholdType: PERCENTAGE
+          Subscribers:
+            - Address: !Ref pBudgetAlertEmail1
+              SubscriptionType: EMAIL
+            - Address: !Ref pBudgetAlertEmail2
+              SubscriptionType: EMAIL
+        - Notification:
+            ComparisonOperator: GREATER_THAN
+            NotificationType: FORECASTED
+            Threshold: 100
+            ThresholdType: PERCENTAGE
+          Subscribers:
+            - Address: !Ref pBudgetAlertEmail1
+              SubscriptionType: EMAIL
+            - Address: !Ref pBudgetAlertEmail2
+              SubscriptionType: EMAIL
+        - Notification:
+            ComparisonOperator: GREATER_THAN
+            NotificationType: ACTUAL
+            Threshold: 100
+            ThresholdType: PERCENTAGE
+          Subscribers:
+            - Address: !Ref pBudgetAlertEmail1
+              SubscriptionType: EMAIL
+            - Address: !Ref pBudgetAlertEmail2
+              SubscriptionType: EMAIL
